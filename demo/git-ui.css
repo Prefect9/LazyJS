@@ -1,0 +1,6 @@
+html, body{ min-height: 100%; padding: 0; margin: 0; display: block; color: #000; background: #efefef }
+.page{ min-height: 100%; display: flex; flex-direction: column; background: #efefef; padding: 60px 40px 40px; align-items: center; justify-content: center }
+*{ box-sizing: border-box; font-family: 'Inter', sans-serif }
+
+
+.message{ padding: 10px 15px; font-size: 16px; background: #fff; border-radius: 8px; text-align: center; width: 100%; max-width: 450px; color: #424242; box-shadow: 0 0 20px rgba(0, 0, 0, .05) }

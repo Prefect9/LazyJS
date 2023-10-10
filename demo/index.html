@@ -1,0 +1,43 @@
+<html lang="ru">
+    <head>
+        <meta charset="utf-8">
+        <title>LazyJS | Version 1.00</title>
+        <link rel="shortcut icon" href="favicon.ico" type="shortcut icon">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="theme-color" content="#efefef" media="(prefers-color-scheme: light)">
+        <meta name="theme-color" content="#efefef" media="(prefers-color-scheme: dark)">
+        <link rel="stylesheet" type="text/css" href="Inter/stylesheet.css" />
+        <link rel="stylesheet" type="text/css" href="git-ui.css" />
+    </head>
+</html>
+<body>
+    <div class="page"></div>
+    <script src="../LazyJs.js?version=1.00.0"></script>
+    <script>
+        var page = document.querySelector(".page")
+        var Push = function(text){
+            var msg = document.createElement("div")
+            msg.classList.add("message")
+            msg.innerHTML = text
+            page.append(msg)
+            return msg
+        }
+        var Start = function(){
+            Push("Start loading")
+            LazyJs.AddSource({ name: "data-test1", link: "test1.json" })
+            LazyJs.AddSource({ name: "data-test2", link: "test2.json" })
+            LazyJs.AddSource({ name: "data-test3", link: "test3.json" })
+            LazyJs.Load(["data-test1", "data-test2"])
+                .then(function(){
+                    Push("Loaded Test1 & Test2").style.color = "#ff5d5d"
+                    return LazyJs.Load("data-test3")
+                })
+                .then(function(){
+                    Push("Loaded final Test3").style.color = "#04e423"
+                })
+                .catch(function(e){
+                    console.error(e)
+                })
+        }()
+    </script>
+</body>
