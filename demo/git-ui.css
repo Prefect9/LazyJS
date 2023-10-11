@@ -3,4 +3,5 @@ html, body{ min-height: 100%; padding: 0; margin: 0; display: block; color: #000
 *{ box-sizing: border-box; font-family: 'Inter', sans-serif }
 
 
-.message{ padding: 10px 15px; font-size: 16px; background: #fff; border-radius: 8px; text-align: center; width: 100%; max-width: 450px; color: #424242; box-shadow: 0 0 20px rgba(0, 0, 0, .05) }
+.message{ padding: 10px 15px; font-size: 16px; background: #fff; border-radius: 8px; text-align: center; width: 100%; max-width: 400px; color: #777; box-shadow: 0 0 20px rgba(0, 0, 0, .05) }
+.message + .message{ margin-top: 15px }
