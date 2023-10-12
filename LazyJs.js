@@ -130,6 +130,9 @@ var LazyJs = function(){
         pool = new LazyJsPoolSources()
     
     that.AddSource = pool.Add
+    that.AddSources = function(sources){
+        for(var source in sources) pool.Add(source)
+    }
     
     var GetPromiseSource = function(sourceName){
         return new Promise(function(resolve, reject){
@@ -185,5 +188,7 @@ var LazyJs = function(){
         return promise
     }
     that.Load = Load
+    
+    that.Get = pool.Get
 }
 window.LazyJs = new LazyJs()
