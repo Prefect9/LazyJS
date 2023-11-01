@@ -1,3 +1,8 @@
+/*
+    Version: 1.02
+    Author: Мистер Мир
+    Tg: @it_dev9
+*/
 var LazyJsError = function(text){
     var that = this
     that.text = text
@@ -11,26 +16,36 @@ var LazyJsSource = function(source){
     that.name = source.name
     that.link = source.link
     that.loaded = false
+    that.loadedData = false
     that.onLoad = null
     that.data = null // данные загруженного ресурса
     that.type = null
-    var startedLoad = false
+    var startedLoad = false,
+        dom = null
     
     var extension = null
-    if(extension = /^(.*?(\..*?))(\?.*)?$/.exec(that.link)) extension = extension[2].toLowerCase()
+    if(extension = /^(.*?(\.[a-z0-9]*?))(\?.*)?$/i.exec(that.link)) extension = extension[2].toLowerCase()
+    
     switch(extension){
         case ".js":
             that.type = "script"
             break
-        case ".json":
-            that.type = "json"
+        case ".css":
+            that.type = "styles"
+            break
+        case ".webp":
+        case ".png":
+        case ".jpg":
+        case ".jpeg":
+            that.type = "image"
             break
         default:
-            throw new LazyJsError("Неизвестный тип ресурса "+that.name)
+            that.type = "data"
+            break
     }
     
     var Load = function(){
-        if(startedLoad) return
+        if(startedLoad || that.loaded) return
         startedLoad = true
         
         switch(that.type){
@@ -41,15 +56,52 @@ var LazyJsSource = function(source){
                 script.onload = function(){
                     that.data = true
                     that.loaded = true
+                    that.loadedData = true
+                    startedLoad = false
                     that.onLoad(that)
                 }
                 script.onerror = function(){
                     that.loaded = false
                     throw new LazyJsError("Ошибка загрузки ресурса "+that.name)
                 }
+                dom = script
                 document.querySelector("body").append(script)
                 break
-            case "json":
+            case "styles":
+                var link = document.createElement("link")
+                link.rel = "stylesheet"
+                link.type = "text/css"
+                link.href = that.link
+                link.onload = function(){
+                    that.data = true
+                    that.loaded = true
+                    that.loadedData = true
+                    startedLoad = false
+                    that.onLoad(that)
+                }
+                link.onerror = function(){
+                    that.loaded = false
+                    throw new LazyJsError("Ошибка загрузки ресурса "+that.name)
+                }
+                dom = link
+                document.querySelector("head").append(link)
+                break
+            case "image":
+                var image = new Image()
+                image.onload = function () {
+                    that.data = true
+                    that.loaded = true
+                    that.loadedData = true
+                    startedLoad = false
+                    that.onLoad(that)
+                }
+                image.onerror = function(){
+                    that.loaded = false
+                    throw new LazyJsError("Ошибка загрузки ресурса "+that.name)
+                }
+                image.src = that.link
+                break
+            case "data":
                 var xhr = new XMLHttpRequest()
                 xhr.open('GET', that.link)
                 xhr.onload = function(){
@@ -57,6 +109,8 @@ var LazyJsSource = function(source){
                     else{
                         that.data = xhr.response
                         that.loaded = true
+                        that.loadedData = true
+                        startedLoad = false
                         that.onLoad(that)
                     }
                 }
@@ -129,7 +183,12 @@ var LazyJs = function(){
     var that = this,
         pool = new LazyJsPoolSources()
     
-    that.AddSource = pool.Add
+    that.AddSource = function(...args){
+        if(args.length == 2 && typeof args[0] == "string" && typeof args[1] == "string") pool.Add({ name: args[0], link: args[1] })
+        else if(args.length == 1 && typeof args[0] == "string") pool.Add({ name: args[0], link: args[0] })
+        else if(args.length == 1 && typeof args[0] == "object") pool.Add(args[0])
+        else throw new LazyJsError("Invalid source arguments")
+    }
     that.AddSources = function(sources){
         for(var source in sources) pool.Add(source)
     }
